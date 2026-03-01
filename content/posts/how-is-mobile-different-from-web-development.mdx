@@ -1,0 +1,67 @@
+---
+title: "How is Mobile Different From Web Development?"
+date: "2023-12-17"
+excerpt: "So many people, including other software engineers, have asked me what mobile development is. The short answer is yes, it's similar to web, but some challenges are unique to mobile development."
+tags: ["Tech", "Mobile", "Coding", "Career"]
+coverImage: "/images/posts/how-is-mobile-different-from-web-development.png"
+---
+
+So many people, including other software engineers, have asked me, "What is mobile development? Is it similar to web development, but on phones?". The short answer is yes, but some challenges are unique to mobile development. Let's take a look at those differences in this post.
+
+## App Releases
+
+Once a mobile app version is submitted to and approved by Google or Apple, there is no going back. But what happens if a bug is discovered?
+
+When a bug is found on web, the team can fix it immediately and deploy the change so it doesn't hurt the business if necessary. The bug will be resolved in a matter of hours, if not minutes, after the incident was reported. However, when a bug is found on mobile, there is not much that can be done to stop the bleeding right away. After fixing the bug, the new version of the app needs to be submitted to Apple or Google, and wait for their reviews. For iOS, "90% are reviewed within 48 hours", while for Android, it might take "up to seven days or longer in exceptional cases".
+
+So, bug fixes are delayed by a week, which is not too bad, right? No. For a considerable business that revolves around mobile apps such as Uber, that could mean a loss of millions of dollars each day in gross bookings. On top of that, the users don't constantly update right after Apple and Google approve the app. From my experience as a mobile developer, on average, 80% of users update to the latest versions after one week. In short, developers should not assume the users update the app but should support as many versions as possible.
+
+> "It was the most terrifying thing to take 10,000 diffs, package it into effectively a bullet, fire that bullet at the horizon and that bullet, once it leaves the barrel, it's gone." – Chuck Rossi
+
+## Backward Compatibility
+
+Imagine you have designed a perfect application programming interface (API) for web and mobile apps. Later on, when the app and the team grow, you realize that there is no such thing as a perfect API. On that account, the API is redesigned to scale better.
+
+The web team then updates the codebase to utilize the redesigned API better. As a result, the web codebase is shiny and beautiful with the new API. Mobile teams don't want to be left behind and migrate the mobile codebase to use the new API. Now that all platforms have gotten rid of the old API, let's also clean that up on the backend side. With the new clean code design in all codebases, everyone lives happily ever after, right? Unfortunately, the answer is no. The customers on previous app versions are frustrated because they couldn't use the app due to frequent crashes.
+
+Even though all codebases have no reference to the legacy API, previous versions of Android and iOS apps still contain the codes that call the API. Consequently, the customers in prior versions experienced crashes because the apps couldn't fetch the legacy API. To sum up, a non-breaking backend change can break older app versions due to backward incompatibility.
+
+## State Management
+
+Managing application states is a complex task for mobile and web development. Yet, it can become even trickier because of mobile app life cycles, which are slightly different between Android and iOS. For example, every time you rotate the app or background and reopen it, it transitions between different life cycles, emitting various events asynchronously that should be handled properly. Most bugs stem from different combinations of events that were not appropriately handled.
+
+To deal with the problems, (functional) reactive programming is usually the choice for most large and stateful mobile applications. The paradigm helps visualize mobile applications as flows of data and events, which also "force" developers to handle asynchronous operations.
+
+Aside from life cycles, process death can pose similar issues as well. Depending on the application requirements, the developers are responsible for saving and restoring states when the app is reopened.
+
+Another related challenge is deep linking - providing a link that leads to a specific section in the app instead of opening the browser. Let's take the Facebook app as an example. Say you are scrolling through the newsfeed and then receive an email about some mountain bike posting on the Facebook marketplace. Next, you open the email and click the link to read more about the post. That link will take you to the Facebook app again, but what should happen then? Should the marketplace tab be added to the navigation stack before adding the post? Should the state be reset? In essence, the app can be in infinitely many different states before navigating to the app from a deep link.
+
+## Offline Experience
+
+Contrastingly, web developers generally don't need to support an offline mode. When did you last open a browser without the Internet and expect anything to work?
+
+Crunchyroll, an anime streaming app, is a representative case to show how complicated supporting offline mode can be. First, the app needs to reliably detect when the phone is offline and then navigate the users to a completely different experience. Sometimes, the offline experience might be so different and huge that building it is equivalent to creating another app.
+
+Second, when the connection latency and speed are unstable, the app should be able to scale the stream accordingly. Nevertheless, there are times when the connection is exceedingly slow. Should the app run in offline mode, then? Or should the app retry? Retrying can be extremely risky regarding payments if not done correctly.
+
+Last but not least, users want to watch anime while travelling without an Internet connection. Thus, the app needs to persist the anime locally, and when the user is back online, the data (e.g. bookmarks and view counts) must be synced again.
+
+## Device and Operating System Heterogeneity
+
+While web developers have to deal with nonidentical behaviours of the various browsers on different operating systems (OS), the variability is less significant than that of mobile devices. As time goes on, more devices are released along with new OS versions for both Android and iOS.
+
+Though not often, there are times when OS updates require a significant effort from mobile developers to comply with the new changes. For example, I spent my entire internship preparing OpenText Core Share for the introduction of background execution limits on Android Oreo.
+
+On iOS, OS fragmentation is less of a concern due to the swift OS adoption rate - pun intended. Most businesses can cover over 90% of users by supporting the last two versions. Nonetheless, as of December 2023, the latest two versions, Android 13 and 14, only covers 22.4% of devices. To get a similar coverage of 90% of users, Android apps must support up to and including Android 8.
+
+Similarly, iOS devices are getting more diverse, but it is not even remotely close to the variety of Android devices. Although the issue is less prominent nowadays, Samsung is notorious for weird crashes related to Samsung customization. On top of that, some apps need to consider utilizing the differences in the layout of the devices. Though responsive design is not unique to mobile development, odd phone layouts such as those of Galaxy Fold and Galaxy Flip can complicate the app designs for some apps.
+
+The heterogeneity doesn't end here. Some phones have their Chinese versions, which don't have Google Store. Notifications, experiments, and data are necessary tools to improve the app, but they all rely on Google Store.
+
+## Payment
+
+In addition to the difficulty of A/B testing payment and how tightly Apple and Google control the in-app purchase, there are many other variables to consider when it comes to payment. Gergely Orosz explained really well how complicated payments can get in the first half of his video Why is The Uber App So Large.
+
+## Conclusion
+
+Despite posing those challenges, mobile development isn't necessarily more puzzling than web development. The only purpose of this post is to shed light on the challenges unique to mobile development that very few people pay attention to.

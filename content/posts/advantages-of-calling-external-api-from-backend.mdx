@@ -1,0 +1,69 @@
+---
+title: "The Advantages of Calling an External API from the Server"
+date: "2023-12-31"
+excerpt: "Should you query the API directly from the web application or should you call it from your server and then return to the client? This post explores the benefits of the backend approach."
+tags: ["Coding", "Tech", "Programming"]
+coverImage: "/images/posts/advantages-of-calling-external-api-from-backend.png"
+---
+
+## The Scenario
+
+Imagine you want to build a full-stack stock tracker application. For simplicity, let's say there are one server and one web application. The web application needs real-time stock price and volume, but you don't want to reinvent the wheel by implementing it from scratch. So, you decide to utilize an external API - Alpha Vantage Quote Endpoint. Should you query the API directly from the web application or should you call it from your server and then return to the client?
+
+There are pros and cons to each approach. However, this post focuses on exploring the benefits of calling the API from the backend since the pros outweigh the cons of this approach for most cases.
+
+## Security
+
+For a seamless and secure experience with external APIs like Alpha Vantage's Quote Endpoint, it's crucial to consider how API keys are handled. Direct client-side API calls risk exposing these keys, potentially leading to exploitation by unauthorized users. A more secure alternative is handling the API call from the backend, where keys remain concealed and safe from client-side vulnerabilities. Moreover, this backend approach allows for enhanced security through measures like validating user requests and ensuring that only authorized access to the API is permitted, thereby safeguarding your application from unauthorized intrusions and misuse.
+
+## Customization
+
+It is unlikely that an external endpoint returns the response with the desired format and minimal information for your usage. Therefore, handling external API calls on the backend allows tailoring responses to the web application's exact need. For instance, the demo response from Alpha Vantage might look like this.
+
+```json
+{
+    "Global Quote": {
+        "01. symbol": "IBM",
+        "02. open": "162.1600",
+        "03. high": "163.3100",
+        "04. low": "162.0500",
+        "05. price": "163.2100",
+        "06. volume": "1770770",
+        "07. latest trading day": "2023-12-26",
+        "08. previous close": "162.1400",
+        "09. change": "1.0700",
+        "10. change percent": "0.6599%"
+    }
+}
+```
+
+The endpoint provides more than just the current price and the trading volume of a stock. On top of that, the names contain spaces and special characters, which complicates the parsing process on the client side. If you only want the current price and the range between the low and high, the response can be simplified by a lot by performing some simple computations on the server.
+
+```json
+{
+    "price": "IBM",
+    "range": "1.2600"
+}
+```
+
+Let's explore why customizing the response on the backend is so important in the next section.
+
+## Robustness
+
+Many businesses need more than one client application. If you build a rideshare business, you need one for riders and one for drivers. If you build a marketplace, you need one for buyers and one for sellers. Even when you only want to build a single stock portfolio tracker, you may want to build a web app, mobile apps, and desktop apps. Processing the response on the backend helps avoid repeating the same logic for each client. Similarly, when Alpha Vantage decides to change the response format of the API, you only need to update once in the server code. Hence, that saves a ton of engineering time for the business.
+
+On top of that, handling intensive computations on the frontend doesn't scale well because of the users' hardware limitations. Thus, the upgradability of the hardware as well as the parallelization across different computers make the backend the ideal place for those rigorous computations.
+
+Additionally, if Alpha Vantage tweaks the response in the future, then the mobile apps will stop working until the users update them. To understand more about the unique challenges that mobile development has, please check out my other post [How is Mobile Different From Web Development?](/blog/how-is-mobile-different-from-web-development)
+
+## Caching
+
+Let's be honest. Your side project doesn't really need real-time data, but it might have a few dozen users. Also, the free version of the Alpha Vantage API only updates daily. For that reason, caching the response stock information response and only re-requesting once a day should be perfectly fine for a stock portfolio tracking application. If you decide to upgrade to the premium version later on, caching will save you some cash by not having to make lots of API calls to the Alpha Vantage endpoint.
+
+## Avoid CORS Issues
+
+Last but not least, Cross-Origin Resource Sharing (CORS) is a mechanism that allows a website to request data from a different URL from its own because most browsers implement the same-origin policy as their security mechanism that blocks data from other external URLs unless some conditions are met. By calling API from the server side, it effectively bypasses these CORS restrictions and relieves developers' frustration with CORS issues.
+
+## Conclusion
+
+While direct API calls from the frontend may be preferable for real-time data needs like dynamic search suggestions, the minor increase in server complexity is a small trade-off in most scenarios. The overarching advantages, ranging from enhanced security to centralized control, significantly outweigh these limitations. API integration through the backend presents a compelling case for modern application development.

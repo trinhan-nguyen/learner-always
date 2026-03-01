@@ -1,0 +1,188 @@
+---
+title: "Ktor: Crafting a Stock Portfolio Endpoint – Part 3"
+date: "2024-01-28"
+excerpt: "This post continues the series on building a Ktor endpoint wrapping the AlphaVantage Quote Endpoint, with focus on implementing unit tests."
+tags: ["Tutorial", "Kotlin", "Backend", "Unit Test"]
+coverImage: "/images/posts/ktor-crafting-a-stock-portfolio-endpoint-part-3.png"
+---
+
+This post continues the series on building a Ktor endpoint wrapping the AlphaVantage Quote Endpoint, with focus on implementing unit tests.
+
+## Preparation
+
+The initial setup involves simplifying the JSON response structure. Rather than echoing AlphaVantage's full output, the endpoint now returns only essential fields: `price`, `symbol`, `change`, and `changePercent`.
+
+A new model called `SimpleStockQuote` handles this simplified structure:
+
+```kotlin
+@Serializable
+data class SimpleStockQuote(
+    val price: Double,
+    val symbol: String,
+    val change: Double,
+    val changePercent: String,
+)
+```
+
+## Response Simplification
+
+To maintain scalability and testability, a mapper class transforms `AlphaVantageQuote` into `SimpleStockQuote`:
+
+```kotlin
+interface SimpleStockQuoteMapper {
+    fun map(quote: AlphaVantageQuote): SimpleStockQuote
+}
+
+class SimpleStockQuoteMapperImpl : SimpleStockQuoteMapper {
+    override fun map(quote: AlphaVantageQuote): SimpleStockQuote {
+        val globalQuote = quote.globalQuote
+        return SimpleStockQuote(
+            price = globalQuote.price,
+            symbol = globalQuote.symbol,
+            change = globalQuote.change,
+            changePercent = globalQuote.changePercent,
+        )
+    }
+}
+```
+
+The `AlphaVantageApi` interface is updated to return `SimpleStockQuote`, and the implementation is modified:
+
+```kotlin
+interface AlphaVantageApi {
+    suspend fun getQuote(
+        symbol: String,
+        apiKey: String,
+    ): SimpleStockQuote
+}
+
+class AlphaVantageApiImpl(
+    private val simpleStockQuoteMapper: SimpleStockQuoteMapper,
+) : AlphaVantageApi {
+    override suspend fun getQuote(
+        symbol: String,
+        apiKey: String,
+    ): SimpleStockQuote {
+        //...
+        httpClient.close()
+        return simpleStockQuoteMapper.map(
+            quote = response.body<AlphaVantageQuote>(),
+        )
+    }
+}
+```
+
+For dependency injection configuration, Option 2 is recommended:
+
+```kotlin
+val applicationModule = module {
+    single<SimpleStockQuoteMapper> {
+        SimpleStockQuoteMapperImpl()
+    }
+
+    single<AlphaVantageApi> {
+        AlphaVantageApiImpl(get())
+    }
+}
+```
+
+## Unit Testing
+
+Testing dependencies are added to the build file:
+
+```gradle
+val mockitoVersion: String by project
+
+dependencies {
+    implementation("io.insert-koin:koin-test:$koinVersion")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:$mockitoVersion")
+}
+```
+
+With `mockitoVersion=5.2.1` specified in `gradle.properties`.
+
+The test class extends `KoinTest` for dependency injection support:
+
+```kotlin
+class ApplicationTest : KoinTest {
+    private lateinit var api: AlphaVantageApi
+
+    private val apiKey = "apiKey"
+    private val expectedQuote = SimpleStockQuote(
+        symbol = "symbol",
+        price = 69.96,
+        change = 34.98,
+        changePercent = "100%",
+    )
+
+    @BeforeTest
+    fun setUp() {
+        api = mock()
+
+        startKoin {
+            modules(
+                module {
+                    single<AlphaVantageApi> { api }
+                }
+            )
+        }
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
+    }
+
+    @Test
+    fun `when the api returns stock data, then return the corresponding simplified quote`() = testApplication {
+        whenever(api.getQuote(symbol = any(), apiKey = eq(apiKey)))
+            .thenReturn(expectedQuote)
+
+        environment {
+            config = MapApplicationConfig("ktor.environment" to apiKey)
+        }
+        val json = Json { prettyPrint = true }
+
+        val response = client.get("/")
+        val actualQuote = json.decodeFromString<SimpleStockQuote>(response.bodyAsText())
+
+        assertEquals(
+            expected = HttpStatusCode.OK,
+            actual = response.status,
+        )
+        assertEquals(
+            expected = expectedQuote,
+            actual = actualQuote,
+        )
+    }
+}
+```
+
+To avoid Koin initialization conflicts, the `Application.module` function includes an `isProduction` flag:
+
+```kotlin
+fun Application.module(isProduction: Boolean = true) {
+    if (isProduction) {
+        configureKoin()
+    }
+    //...
+}
+```
+
+In tests, this flag is set to false:
+
+```kotlin
+class ApplicationTest : KoinTest {
+    @Test
+    fun `when the api returns stock data, then return the corresponding simplified quote`() = testApplication {
+        application {
+            module(isProduction = false)
+        }
+        //...
+    }
+}
+```
+
+## Conclusion
+
+Demonstrating good design patterns and unit testing skills can distinguish you from other interns applying for the same job. Additional tests can verify failure scenarios and mapper functionality. Check out the accompanying GitHub repository and stay tuned for Part 4, which will introduce actual endpoint parameters and enhanced error handling.

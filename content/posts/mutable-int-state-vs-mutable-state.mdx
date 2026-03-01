@@ -1,0 +1,45 @@
+---
+title: "Navigating Jetpack Compose: The Case for MutableIntState over MutableState"
+date: "2023-12-03"
+excerpt: "If you've been using Jetpack Compose, you've probably seen the warning to prefer mutableIntStateOf instead of mutableStateOf. This post explores the reasoning behind it."
+tags: ["Coding", "Compose", "Android", "Kotlin", "Mobile"]
+coverImage: "/images/posts/mutable-int-state-vs-mutable-state.png"
+---
+
+## Who This Post is For
+
+If you've been using Jetpack Compose, you've probably seen this warning: "Prefer `mutableIntStateOf` instead of `mutableStateOf`." For those curious about why Android Studio provides this suggestion, this post explores the reasoning. The concise answer: `mutableIntStateOf` enhances performance by avoiding autoboxing.
+
+## The Differences
+
+Beyond `MutableIntState`, there are `MutableDoubleState`, `MutableFloatState`, and `MutableLongState`, which are similar in nature. For brevity, this post only discusses the differences between `MutableIntState` and `MutableState`, and the learnings should translate perfectly to the other types of mutable states. First, let's take a look at the definitions of `mutableIntStateOf` and `mutableStateOf` in the Android Developer official documentation.
+
+> The MutableIntState class is a single value holder whose reads and writes are observed by Compose. Additionally, writes to it are transacted as part of the Snapshot system. On the JVM, values are stored in memory as the primitive `int` type, avoiding the autoboxing that occurs when using `MutableState<Int>`
+
+> The MutableState class is a single value holder whose reads and writes are observed by Compose. Additionally, writes to it are transacted as part of the Snapshot system.
+
+The only difference is that values are stored in memory as primitive types to avoid autoboxing. So, why avoid autoboxing?
+
+## What is Autoboxing?
+
+According to the official Oracle documentation, autoboxing is the automatic conversion between primitive types and their corresponding object wrapper classes by the Java compiler. The conversion comprises two phases: boxing and unboxing.
+
+**Boxing** is the act of converting a primitive type to its corresponding wrapper class (e.g. `int` to `Integer`).
+
+**Unboxing** is the act of converting a wrapper class of a primitive type to the primitive type itself (e.g. `Integer` to `int`).
+
+## Why Wrapper Classes?
+
+One purpose of the wrapper classes is to enable primitive types to be used when defining classes, interfaces, or functions that utilize generics such as `Collection` or, in this case, `MutableState`. To learn more about generics in Java, see the Oracle lessons.
+
+Wrapper classes also play a major role in Kotlin. While Kotlin provides convenient features, the Kotlin compiler for JVM compiles Kotlin source files into Java class files, which are then run on the JVM. Since primitive types can't be null, in Kotlin, all primitive types are wrapped in their corresponding wrapper classes to enable arguably the most critical Kotlin feature - null safety.
+
+For the above reasons, converting between primitive types and their wrapper classes is prevalent. Hence, autoboxing saves us the hassle of boxing and unboxing explicitly every time.
+
+## Why Avoid Autoboxing?
+
+The short answer is performance.
+
+When it comes to memory, the primitive type `int` takes 4 bytes, while its wrapper class `Integer` takes 16 bytes (300% overhead). Note that the overhead depends on the specific primitive type, so it's not always 300% memory overhead.
+
+Despite the memory overhead, it might not be a problem if we only have a small list of items or a single variable such as `MutableState<Int>`. The problem lies in the process of disposing of the unused wrapper classes. For that, the garbage collector needs to work hard, which, in turn, decreases the runtime in the best-case scenario. Sometimes, the garbage collector doesn't do a good job of cleaning up the garbage. In that case, we ended up with a severe memory leak, depending on how often a view needs to recompose. With such performance costs, it just makes sense that Google introduced `MutableIntState` to avoid autoboxing.

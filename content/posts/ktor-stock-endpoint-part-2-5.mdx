@@ -1,0 +1,111 @@
+---
+title: "Ktor: Crafting a Stock Portfolio Endpoint – Part 2.5"
+date: "2024-01-21"
+excerpt: "Before diving into Part 3's unit testing focus, this installment addresses one key preparation step to improve the testability and reusability of the code: dependency injection."
+tags: ["Tutorial", "Kotlin", "Backend", "Koin"]
+coverImage: "/images/posts/ktor-stock-endpoint-part-2-5.png"
+---
+
+Before diving into Part 3's unit testing focus, this installment addresses one key preparation step to improve the testability and reusability of the code: dependency injection. This post continues from [Part 2](/blog/ktor-stock-endpoint-part-2) and focuses on building a Ktor endpoint wrapping the AlphaVantage Quote Endpoint.
+
+## Why Dependency Injection?
+
+In simple terms, dependency injection involves passing objects or functions into another object rather than creating them internally. The current codebase shows:
+
+```kotlin
+fun Application.configureRouting() {
+    //...
+    val api = AlphaVantageApiImpl()
+    //...
+}
+```
+
+Instead of internal creation, the interface can be passed as a parameter:
+
+```kotlin
+fun Application.configureRouting(
+    api: AlphaVantageApi
+) {
+    //...
+}
+```
+
+This approach provides two key benefits: flexibility across different implementations and improved testability through mocking capabilities.
+
+## Koin Setup
+
+The tutorial explores Koin for dependency injection due to its comprehensive documentation for Ktor projects. First, add dependencies:
+
+```kotlin
+val koinVersion: String by project
+//...
+
+dependencies {
+  //...
+  implementation("io.insert-koin:koin-ktor:$koinVersion")
+  implementation("io.insert-koin:koin-test:$koinVersion")
+  implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
+}
+```
+
+Update `gradle.properties`:
+
+```properties
+koinVersion=3.5.3
+```
+
+Install the Koin plugin:
+
+```kotlin
+fun Application.configureKoin() {
+    install(Koin) {
+        slf4jLogger()
+        modules(applicationModule)
+    }
+}
+```
+
+Call this function in `Application.kt`:
+
+```kotlin
+fun Application.module() {
+    //...
+    configureKoin()
+}
+```
+
+## Modules
+
+A Koin module organizes dependency injection definitions and configurations. Create an empty `applicationModule` file:
+
+```kotlin
+val applicationModule = module {
+  // Intentionally left empty
+}
+```
+
+## Injection
+
+Define which object to inject in the module:
+
+```kotlin
+val applicationModule = module {
+    single<AlphaVantageApi> {
+        AlphaVantageApiImpl()
+    }
+}
+```
+
+The `single` keyword indicates a Singleton pattern — the same instance is provided each time. In `Application.kt`, provide the dependency:
+
+```kotlin
+fun Application.module() {
+  //...
+  val api by inject<AlphaVantageApi>()
+  configureRouting(api = api)
+}
+```
+
+## Conclusion
+
+While core functionality remains unchanged, the design has been significantly enhanced for testability and maintainability. Stay tuned for [Part 3](/blog/ktor-crafting-a-stock-portfolio-endpoint-part-3), covering unit testing.

@@ -1,0 +1,121 @@
+---
+title: "Ktor: Crafting a Stock Portfolio Endpoint – Part 1"
+date: "2024-01-07"
+excerpt: "Let's build a simple server for an investment portfolio tracker using Ktor - a lightweight Kotlin framework."
+tags: ["Tutorial", "Coding", "Backend", "Kotlin"]
+coverImage: "/images/posts/ktor-stock-endpoint-part-1.png"
+---
+
+Let's build a simple server for an investment portfolio tracker using Ktor - a lightweight Kotlin framework. The server built in this series of posts only features a single endpoint. This endpoint returns a response containing the latest price and volume information for a stock ticker symbol tailored from the Alpha Vantage Quote Endpoint. If you're wondering why someone would bother wrapping an external endpoint instead of calling it directly, you may want to take a look at my other post [The Advantages of Calling an External API from the Server](/blog/advantages-of-calling-external-api-from-backend). Part 1 only shows how to set up a Ktor project and return a type-safe response.
+
+## Setup
+
+To set things up, you can follow Ktor's official documentation to build a simple server application that prints "Hello World!" on a browser. For ease of following along, let's choose Netty as the main engine and `YAML` as the configuration file format.
+
+Now, you officially have a working server but it can only print a string instead of a tailored type-safe response. The entry point of the server lives in `Application.kt` with the main logic in `Routing.kt` which was installed as a plugin.
+
+```kotlin
+fun main(args: Array<String>) {
+    io.ktor.server.netty.EngineMain.main(args)
+}
+
+fun Application.module() {
+    configureRouting()
+}
+```
+
+```kotlin
+fun Application.configureRouting() {
+    routing {
+        get("/") {
+            call.respondText("Hello World!")
+        }
+    }
+}
+```
+
+## Type-Safe Response
+
+Let's create a simple type-safe response in a new file and return that instead of the string "Hello World!" to see how the server responds.
+
+```kotlin
+data class Response(val status: String)
+```
+
+With that, you can update the logic in `Routing.kt` to return the new type instead.
+
+```kotlin
+fun Application.configureRouting() {
+    routing {
+        get("/") {
+            call.respond(Response(status = "OK"))
+        }
+    }
+}
+```
+
+The server throws an error `Failed to load resource: the server responded with a status of 500 ()`. Chrome also displays a generic error message that doesn't add any value to help us determine the underlying cause.
+
+Luckily, Ktor has Status Pages, a useful plugin to respond appropriately to any failure state based on a thrown exception or status code. Let's start by adding the dependency in `build.gradle.kts` if you haven't already.
+
+```gradle
+dependencies {
+  //...
+  implementation("io.ktor:ktor-server-status-pages:$ktor_version")
+}
+```
+
+Next, you can configure Status Pages similar to how the Routing plugin was configured. That means putting the main configuration logic function in a separate file `StatusPages.kt` which is called in `Application.kt`. Then, let's run the application again.
+
+```kotlin
+fun Application.module() {
+    //...
+    configureStatusPages()
+}
+```
+
+```kotlin
+fun Application.configureStatusPages() {
+    install(StatusPages) {
+        exception<Throwable> { call, error ->
+            call.respondText(
+                text = error.localizedMessage,
+                contentType = ContentType.Text.Plain,
+                status = HttpStatusCode.InternalServerError,
+            )
+        }
+    }
+}
+```
+
+The browser is now able to catch the exception and print a useful message. Turns out that the Response type needs serializing before returning it to the browser. Following the instructions from the error message, you can install the serialization compiler plugin and mark the Response class `@Serializable`.
+
+```gradle
+dependencies {
+  //...
+  implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
+  implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+}
+```
+
+```kotlin
+@Serializable
+data class Response(val status: String)
+```
+
+```kotlin
+fun Application.module() {
+    //...
+    configureSerialization()
+}
+```
+
+```kotlin
+fun Application.configureSerialization() {
+    install(ContentNegotiation) {
+        json()
+    }
+}
+```
+
+Finally, the application can now display a type-safe response on a desired port. If you encounter any issues, you can leave a comment below for assistance. Check out [Part 2](/blog/ktor-stock-endpoint-part-2) for continuation of this series.

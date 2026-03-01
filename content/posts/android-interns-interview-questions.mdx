@@ -1,0 +1,113 @@
+---
+title: "Common Interview Questions for Android Interns"
+date: "2020-09-15"
+excerpt: "The questions below are the most common questions from my experience interviewing for a few dozen Android intern positions."
+tags: ["Interview", "Android", "Coding", "Intern"]
+coverImage: "/images/posts/android-interns-interview-questions.png"
+---
+
+The questions below are by no means the definitive guide to getting an Android internship. They are simply the most common questions from my experience interviewing for a few dozen Android intern positions.
+
+## Common Interview Questions
+
+The answers here are solely based on personal opinions as well as interviewer feedback and other resources. Thus, all the provided answers should be used as an example only. Moreover, it is extremely important in an interview that you answer all the questions to your understanding.
+
+### 1. What is an Activity?
+
+An `Activity` is an application component that usually represents a single screen with a user interface.
+
+*Extra: Each Activity has its lifecycle so we may have more control over what we can do at different states of the Activity through callbacks.*
+
+### 2. What is a Fragment?
+
+We can think of a `Fragment` as a sub-activity, which essentially is a modular section of an application's user interface or a behavior that can be placed in an `Activity`. Therefore, `Fragment` enables modular design as an `Activity` can contain multiple `Fragments`.
+
+*Extra: The host Activity can add or remove Fragments at any time. Even though a Fragment has its lifecycle and callbacks, the lifecycle is closely related to the host's lifecycle.*
+
+### 3. What are lifecycles?
+
+Since users can navigate among different screens and applications, the `Activities` and `Fragments` that represent those screens will have to go through different states of their lifecycles. Each state has a callback, which provides a mechanism that allows developers to execute some code when the state changes. Different callbacks at different states of a lifecycle includes `onCreate()`, `onRestart()`, `onStart()`, `onResume()`, `onPause()`, `onStop()`, and `onDestroy()`.
+
+### 4. What is the difference between onStart() and onResume()?
+
+`onStart()` is called when the `Activity` becomes visible, whereas `onResume()` is called when the `Activity` is in the foreground and the user can interact with it. If we navigate away then reopen an application, both `onStart()` and `onResume()` are called. On the other hand, if a dialog pops up and is dismissed, only `onResume()` is called.
+
+### 5. What kind of code would you put in onStart(), and what kind of code would you put in onResume()?
+
+Imagine that we are driving, `onStart()` should contain the code for starting a car (from home) such as starting the engine and releasing the hand brake. The callback `onResume()` should contain the code for resuming a car on the road (after a red light perhaps) such as releasing the foot brake and pressing the gas pedal.
+
+### 6. What are configuration changes? How should we handle them?
+
+Device configurations may change during runtime such as screen orientation, keyboard availability, and multi-window mode. The configuration changes may recreate `Activities` or `Fragments`, which may affect their states. It is important that we restore (or maintain) the states and data after configuration changes occur.
+
+### 7. What are the Android Application Components?
+
+Application components are essential building blocks for an Android application. They consist of `Activities`, `Services`, `Broadcast Receivers`, and `Content Providers`.
+
+### 8. What is the difference between IntentService and JobIntentService?
+
+IntentService was deprecated in favor of JobIntentService, which handles background work more reliably, especially after the introduction of background execution limits in Android Oreo.
+
+### 9. What are the differences between ListView and RecyclerView?
+
+The primary distinguishing feature is the ViewHolder pattern. RecyclerView enforces the ViewHolder pattern, which improves performance by recycling views and avoiding unnecessary `findViewById()` calls.
+
+### 10. What are unit tests?
+
+Unit tests are automated tests that test an isolated block of code. One of the most common frameworks for unit testing in Android is JUnit (the default framework for Android). Mockito and Espresso are also common frameworks to build on top of JUnit.
+
+### 11. What is dependency injection?
+
+Classes are usually dependent on having references to other classes. These required classes are called dependencies. Instead of instantiating the dependencies within a class, we may inject them into that class.
+
+### 12. What is reactive programming?
+
+Reactive programming is a programming paradigm that uses data flow to construct the application.
+
+### 13. Why use reactive programming?
+
+Asynchronous programming is almost always listed as the first benefit of reactive programming. With the data-flow approach, every operation in the application is treated as if it is asynchronous. Thus, as long as a clear visual graph is created, it is extremely convenient to deal with asynchronous operations.
+
+### 14. What is an Observable in RxJava?
+
+An observable represents any object that can get data from a data source and emit a sequence of data (its states) for any registered observer. An observer is simply an object who wants to get notified when an observable emits its data. The `Observable` class in RxJava is a class that can emit any number of values and then complete or emit an error.
+
+### 15. What is a Single, Maybe, and Completable in RxJava?
+
+**`Single`** is an observable that emits a value and completes or emits an error.
+
+**`Maybe`** is similar to Single but it may not emit any value. That means it can either emit an item and complete, or emit an error, or just complete.
+
+**`Completable`** either completes or emits an error. It does not emit any value.
+
+## Bonus Questions
+
+Each of the questions below does not have a single correct answer. These questions are there for you to express yourself and to help the interviewers understand your thought process and perspectives.
+
+### 1. Do you prefer Java or Kotlin, and why?
+
+Even though there is no wrong answer, don't say that Kotlin (or Java) is better simply because someone said so. This shows that you don't have a strong understanding and reasoning to support your choice of tools. However, do compare the language by listing the features that your preferred language has that the other doesn't.
+
+*Note: To be honest, most employers are looking forward to hearing "Kotlin!" because their team is either using Kotlin or switching to Kotlin.*
+
+### 2. What is the most challenging technical aspect when you build the application?
+
+This can be a great opportunity for you to show your approach to solving difficult problems. Storytelling, in my opinion, is the best way to answer this kind of question.
+
+### 3. Can you describe the architecture of an app you have worked on?
+
+Simply pick one of the projects you have worked on and tell them about the architecture. Extra points will be awarded to anyone who can also describe why you (or your company) chose that architecture.
+
+### 4. What frameworks do you use?
+
+Similar to the above question, you can earn bonus points by telling why you (or your company) chose that framework.
+
+### 5. How do you stay up to date with Android technology?
+
+Just be honest. Following the Android Developer YouTube channel is a great way to stay up-to-date.
+
+## Disclaimer
+
+The questions above are by no means the definitive guide to getting an Android internship. They are the most common questions from my experience interviewing for a few dozen Android intern positions. However, preparing for the following questions before an Android interview has helped me get most of my internships so far.
+
+*Note: The questions here are to test Android knowledge only. There is no question regarding algorithms and data structures.*

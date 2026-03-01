@@ -1,0 +1,218 @@
+---
+title: "Let's Build a Cross-Platform Chat App in Flutter"
+date: "2019-06-25"
+excerpt: "Let's build a simple real-time messaging application for Android and iOS using Flutter and Firebase."
+tags: ["Coding", "Flutter", "Mobile", "Tutorial"]
+coverImage: "/images/posts/flutter-chat-app.png"
+---
+
+## Why Flutter?
+
+I discovered a note-taking app called Bear but noticed it wasn't available on Android. As a developer, creating cross-platform applications without rebuilding for each platform would be ideal. Google released Flutter, a cross-platform framework written in Dart, on December 4th, 2018. Flutter targets mobile, web, and desktop platforms.
+
+## Overview
+
+We'll build a simple real-time messaging application for Android and iOS using Flutter and Firebase. The application includes Firebase Auth, Firebase Database, and Firebase Storage functionality.
+
+## Let's Get Started
+
+This tutorial builds on Google's Friendly Chat sample application. First, complete the setup at the Google CodeLabs Flutter tutorial, then integrate Firebase.
+
+## Integrate Firebase
+
+**Step 1:** Add Firebase to the Friendly Chat app via Firebase Console following official documentation.
+
+**Step 2:** Add Firebase dependencies to `pubspec.yaml`:
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^0.4.0+6
+  firebase_database: ^3.0.3
+  firebase_auth: ^0.11.1+7
+  firebase_storage: ^3.0.2
+```
+
+*Note: These dependencies may require migrating to AndroidX.*
+
+## Push Messages to Firebase Database
+
+FirebaseDatabase serves as the main database access point, while DatabaseReference references specific database portions:
+
+```dart
+import 'package:firebase_database/firebase_database.dart';
+
+final FirebaseDatabase _database = FirebaseDatabase.instance;
+final DatabaseReference _messageDatabaseReference =
+  FirebaseDatabase.instance.reference().child("messages");
+```
+
+Modify the `_handleSubmitted` callback to push messages to the database:
+
+```dart
+void _handleSubmitted(String text) {
+  _textController.clear();
+  setState(() { _isComposing = false; });
+  final ChatMessage message = _createMessageFromText(text);
+  _messageDatabaseReference.push().set(message.toMap());
+}
+
+ChatMessage _createMessageFromText(String text) => ChatMessage(
+    text: text,
+    username: _name,
+    animationController: AnimationController(
+      duration: Duration(milliseconds: 180),
+      vsync: this,
+    ),
+  );
+```
+
+Database updates won't occur without appropriate security rules. Set the following rule for testing:
+
+```json
+{
+  "rules": {
+    "messages": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
+```
+
+Only authenticated users can read and write messages.
+
+## Implement Firebase Authentication
+
+Follow the Firebase and Flutter documentation for creating a login page and authenticating users with Firebase.
+
+## Save Images to Firebase Storage
+
+Firebase Storage is preferred over Firebase Realtime Database for images due to performance considerations. Database storage would increase load times, while Firebase Storage handles file uploads and downloads robustly, continuing from interruption points.
+
+Set up the storage reference:
+
+```dart
+import 'package:firebase_storage/firebase_storage.dart';
+
+final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+final StorageReference _photoStorageReference =
+  _firebaseStorage.ref().child("chat_photos");
+```
+
+Add the `image_picker` dependency:
+
+```yaml
+image_picker: ^0.6.0+9
+```
+
+The image flow involves users selecting photos from the gallery or camera. The `image_picker` package returns a File object. This file uploads to Firebase Storage, and the resulting URL pushes to the Firebase Database so widgets can display the image.
+
+```dart
+Widget _buildTextComposer() {
+  return IconTheme(
+      data: IconThemeData(color: Theme.of(context).accentColor),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          children: <Widget>[
+            Flexible(
+              child: TextField(
+                controller: _textController,
+                onChanged: (String text) {
+                  setState(() {
+                    _isComposing = text.length > 0;
+                  });
+                },
+                onSubmitted: _handleSubmitted,
+                decoration: InputDecoration.collapsed(
+                  hintText: "Send a message",
+                ),
+              ),
+            ),
+            Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Row(
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.camera_alt),
+                      onPressed: _sendImageFromCamera,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.image),
+                      onPressed: _sendImageFromGallery,
+                    ),
+                    Theme.of(context).platform == TargetPlatform.iOS
+                        ? CupertinoButton(
+                            child: Text("Send"),
+                            onPressed: _isComposing
+                                ? () => _handleSubmitted(
+                                      _textController.text,
+                                    )
+                                : null,
+                          )
+                        : IconButton(
+                            icon: Icon(Icons.send),
+                            onPressed: _isComposing
+                                ? () => _handleSubmitted(
+                                      _textController.text,
+                                    )
+                                : null,
+                          ),
+                  ],
+                ))
+          ],
+        ),
+      ));
+}
+```
+
+```dart
+void _sendImageFromCamera() async {
+  _sendImage(ImageSource.camera);
+}
+
+void _sendImageFromGallery() async {
+  _sendImage(ImageSource.gallery);
+}
+```
+
+Implement `_sendImage` using UUID for file naming:
+
+```dart
+import 'package:uuid/uuid.dart';
+
+void _sendImage(ImageSource imageSource) async {
+  File image = await ImagePicker.pickImage(source: imageSource);
+  final String fileName = Uuid().v4();
+
+  StorageReference photoRef = _photoStorageReference.child(fileName);
+
+  final StorageUploadTask uploadTask = photoRef.putFile(image);
+  final StorageTaskSnapshot downloadUrl = await uploadTask.onComplete;
+  final ChatMessage message = _createMessageFromImage(
+    await downloadUrl.ref.getDownloadURL(),
+  );
+
+  _messageDatabaseReference.push().set(message.toMap());
+}
+```
+
+Configure Firebase Storage security rules:
+
+```
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /chat_photos/{imageId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null &&
+        request.resource.size < 5 * 1024 * 1024
+    }
+  }
+}
+```
+
+## Complete Source Code
+
+Full implementation is available on GitHub.

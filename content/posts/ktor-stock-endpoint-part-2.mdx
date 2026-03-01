@@ -1,0 +1,209 @@
+---
+title: "Ktor: Crafting a Stock Portfolio Endpoint – Part 2"
+date: "2024-01-14"
+excerpt: "This is the second installment in a series focused on developing a single endpoint with Ktor that wraps the AlphaVantage Quote Endpoint."
+tags: ["Tutorial", "Coding", "Backend", "Kotlin"]
+coverImage: "/images/posts/ktor-stock-endpoint-part-2.webp"
+---
+
+This is the second installment in a series focused on developing a single endpoint with Ktor that wraps the AlphaVantage Quote Endpoint. Please review [Part 1](/blog/ktor-stock-endpoint-part-1) to ensure comparable Ktor setup before proceeding.
+
+## Secret API Key
+
+The Alpha Vantage endpoint requires an `apikey` parameter that governs usage limits based on subscription tier. Free tier users receive 25 requests daily, while premium plans ($249.99/month) allow up to 1200 requests per minute. API keys must remain private to prevent malicious exploitation of rate limits.
+
+Environment variables represent the simplest approach for securing sensitive credentials. Configuration occurs via `application.yaml`:
+
+```yaml
+ktor:
+    #...
+    environment: $ALPHA_VANTAGE_API_KEY
+```
+
+Testing credential access involves modifying `Routing.kt`:
+
+```kotlin
+fun Application.configureRouting() {
+    val apiKey = environment.config.propertyOrNull(KTOR_ENV)?.getString()
+    routing {
+        get("/") {
+            apiKey?.let {
+                call.respond(Response(it))
+            } ?: call.respond(Response("Failed to get API key!"))
+        }
+    }
+}
+
+private const val KTOR_ENV = "ktor.environment"
+```
+
+## Response Model
+
+Public endpoints typically return JSON formatted responses. The Alpha Vantage endpoint returns data structured as:
+
+```json
+{
+    "Global Quote": {
+        "01. symbol": "IBM",
+        "02. open": "161.0000",
+        "03. high": "161.7300",
+        "04. low": "160.0800",
+        "05. price": "160.1000",
+        "06. volume": "4086065",
+        "07. latest trading day": "2024-01-03",
+        "08. previous close": "161.5000",
+        "09. change": "-1.4000",
+        "10. change percent": "-0.8669%"
+    }
+}
+```
+
+Kotlin data classes mirror this structure:
+
+```kotlin
+@Serializable
+data class AlphaVantageQuote(
+    val globalQuote: GlobalQuote,
+)
+
+@Serializable
+data class GlobalQuote(
+    val symbol: String,
+    val open: Double,
+    val high: Double,
+    val low: Double,
+    val price: Double,
+    val volume: Long,
+    val latestTradingDay: String,
+    val previousClose: Double,
+    val change: Double,
+    val changePercent: Double,
+)
+```
+
+The `@Serializable` annotation enables JSON parsing from the serialization plugin.
+
+## API Call
+
+Server-to-API communication requires additional dependencies:
+
+```gradle
+dependencies {
+  //...
+  implementation("io.ktor:ktor-client-core:$ktor_version")
+  implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+  implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+}
+```
+
+The Bridge design pattern improves testability and cross-platform compatibility:
+
+```kotlin
+interface AlphaVantageApi {
+    suspend fun getQuote(
+        symbol: String,
+        apiKey: String,
+    ): AlphaVantageQuote
+}
+```
+
+Implementation follows:
+
+```kotlin
+class AlphaVantageApiImpl : AlphaVantageApi {
+    override suspend fun getQuote(
+        symbol: String,
+        apiKey: String,
+    ): AlphaVantageQuote {
+        val httpClient = HttpClient {
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        prettyPrint = true
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                    }
+                )
+            }
+        }
+
+        val response = httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = ALPHA_VANTAGE_URL
+                path("query")
+                parameters.append(name = "function", value = "GLOBAL_QUOTE")
+                parameters.append(name = "symbol", value = symbol)
+                parameters.append(name = "apikey", value = apiKey)
+            }
+        }
+        httpClient.close()
+
+        return response.body<AlphaVantageQuote>()
+    }
+}
+
+private const val ALPHA_VANTAGE_URL = "www.alphavantage.co"
+```
+
+The `getQuote` function is suspending to handle asynchronous network operations.
+
+Updated `Routing.kt` integration:
+
+```kotlin
+fun Application.configureRouting() {
+    val apiKey = environment.config.propertyOrNull(KTOR_ENV)?.getString()
+    val api = AlphaVantageApiImpl()
+    routing {
+        get("/") {
+            apiKey?.let {
+                val quote = api.getQuote(
+                    symbol = "IBM",
+                    apiKey = apiKey,
+                )
+                call.respond(quote)
+            } ?: call.respond(Response("Failed to get API key!"))
+        }
+    }
+}
+```
+
+## Serial Name
+
+JSON field names from Alpha Vantage don't directly map to Kotlin naming conventions. The `@SerialName` annotation resolves this mismatch:
+
+```kotlin
+@Serializable
+data class AlphaVantageQuote(
+    @SerialName("Global Quote")
+    val globalQuote: GlobalQuote,
+)
+
+@Serializable
+data class GlobalQuote(
+    @SerialName("01. symbol")
+    val symbol: String,
+    @SerialName("02. open")
+    val open: Double,
+    @SerialName("03. high")
+    val high: Double,
+    @SerialName("04. low")
+    val low: Double,
+    @SerialName("05. price")
+    val price: Double,
+    @SerialName("06. volume")
+    val volume: Long,
+    @SerialName("07. latest trading day")
+    val latestTradingDay: String,
+    @SerialName("08. previous close")
+    val previousClose: Double,
+    @SerialName("09. change")
+    val change: Double,
+    @SerialName("10. change percent")
+    val changePercent: String,
+)
+```
+
+## Conclusion
+
+The Alpha Vantage Quote Endpoint is now successfully wrapped in a functional Ktor server returning Kotlin responses. Unit testing will be explored in [Part 3](/blog/ktor-crafting-a-stock-portfolio-endpoint-part-3).
