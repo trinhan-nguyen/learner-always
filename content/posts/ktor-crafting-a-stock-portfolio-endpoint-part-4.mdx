@@ -6,13 +6,151 @@ tags: ["Backend", "Kotlin", "Coding", "Tutorial"]
 coverImage: "/images/posts/ktor-crafting-a-stock-portfolio-endpoint-part-4.jpg"
 ---
 
-To conclude this series, we are now refining our current endpoint by providing appropriate parameters and improving error handling. This is the final installment in a series focused on constructing a singular endpoint using Ktor, specifically focusing on wrapping the AlphaVantage Quote Endpoint.
+To conclude this series, we are now refining our current endpoint by providing appropriate parameters and improving error handling. This post is the last post of a series dedicated to constructing a singular endpoint using Ktor, specifically focusing on wrapping the AlphaVantage Quote Endpoint. I strongly recommend at least skimming through the previous posts, as they offer valuable context. Here are the links to the previous posts: [Part 1 (setup & introduction)](/blog/ktor-stock-endpoint-part-1), [Part 2 (external endpoint call)](/blog/ktor-stock-endpoint-part-2), [Part 2.5 (dependency injection)](/blog/ktor-stock-endpoint-part-2-5), [Part 3 (unit testing)](/blog/ktor-crafting-a-stock-portfolio-endpoint-part-3). Having said that, if you're already caught up with the series, let's proceed to finalize our endpoint.
 
-If you haven't already, please check out the previous parts in this series:
+## Preparation
 
-- [Part 1](/blog/ktor-stock-endpoint-part-1) — Setting up a Ktor project and returning a type-safe response
-- [Part 2](/blog/ktor-stock-endpoint-part-2) — Calling the AlphaVantage API and handling the response
-- [Part 2.5](/blog/ktor-stock-endpoint-part-2-5) — Introducing dependency injection with Koin
-- [Part 3](/blog/ktor-crafting-a-stock-portfolio-endpoint-part-3) — Writing unit tests
+Firstly, let's enhance the clarity of our code by renaming the default `get("/")` to the more specific `get("/quote")` in both `ApplicationTest.kt` and `Routing.kt`. This not only makes our route more explicit but also sets the stage for a cleaner separation of routing logic. To achieve this, we'll create a separate file named `SimpleStockQuoteRoute.kt`, where we'll house the routing logic. This restructuring lays the groundwork for seamlessly incorporating new endpoints in the future.
 
-*Note: This post was originally behind a paywall. The content has been adapted for the new blog format.*
+```kotlin
+fun Route.simpleStockQuoteRoute(
+    apiKey: String?,
+    alphaVantageApi: AlphaVantageApi,
+) {
+    get("/quote") {
+        apiKey?.let {
+            val quote = alphaVantageApi.getQuote(
+                symbol = "IBM",
+                apiKey = apiKey,
+            )
+            call.respond(quote)
+        } ?: call.respond("Failed to get the API key!")
+    }
+}
+```
+
+With this, we can update `Routing.kt` to leverage the new function in `SimpleStockQuoteRoute.kt`.
+
+```kotlin
+fun Application.configureRouting(...) {
+  //...
+  routing {
+    simpleStockQuoteRoute(apiKey, alphaVantageApi)
+  }
+}
+```
+
+## Path Parameters
+
+In our current implementation, we've hard-coded `symbol = "IBM"` to consistently retrieve stock information for IBM, which isn't equivalent to wrapping the original AlphaVantage endpoint. Fortunately, Ktor makes it straightforward to support path parameters.
+
+```kotlin
+// A path parameter ({param}) matches a path segment and captures it
+// as a parameter named param. In this case, /quote/{symbol}
+// matches /quote/IBM, but doesn't match /quote.
+get("/quote/{$SYMBOL_PARAM}") {
+    // To access the parameter, use the call.parameters as such
+    val tickerSymbol = call.parameters[SYMBOL_PARAM]
+    if (apiKey != null && tickerSymbol != null) {
+        val quote = alphaVantageApi.getQuote(
+            symbol = tickerSymbol,
+            apiKey = apiKey,
+        )
+        call.respond(quote)
+    } else {
+        call.respond("Failed to get the API key!")
+    }
+}
+
+private const val SYMBOL_PARAM = "symbol"
+```
+
+Now, we have a dynamic endpoint that can fetch stock information for any public company supported by the AlphaVantage endpoint. However, providing a simple text response when an error occurs doesn't offer the best user experience. In the upcoming section, we'll address this and enhance the error-handling experience.
+
+## Error Handling
+
+To illustrate error handling, let's introduce a simple data class to encapsulate error messages.
+
+```kotlin
+@Serializable
+data class ErrorMessage(
+    val errorMessage: String,
+)
+```
+
+Next, let's modify the logic for displaying error messages in `simpleStockQuoteRoute`. Currently, the endpoint displays "Failed to get the API key!" even when the ticker symbol (not the API key) is null.
+
+```kotlin
+get("/quote/{$SYMBOL_PARAM}") {
+    apiKey?.let {
+        tickerSymbol?.let {
+            val quote = alphaVantageApi.getQuote(
+                symbol = tickerSymbol,
+                apiKey = apiKey,
+            )
+            call.respond(quote)
+        } ?: call.respond(
+            ErrorMessage(errorMessage = "Failed to get the ticker symbol!")
+        )
+    } ?: call.respond(
+        ErrorMessage(errorMessage = "Failed to get the API key!")
+    )
+}
+```
+
+When an unrecognized ticker symbol is passed, the AlphaVantage endpoint returns an empty object, leading to a peculiar message. To address this, we can allow nullable fields when parsing the AlphaVantage response.
+
+```kotlin
+@Serializable
+data class GlobalQuote(
+    @SerialName("01. symbol")
+    val symbol: String? = null,
+    @SerialName("02. open")
+    val open: Double? = null,
+    @SerialName("03. high")
+    val high: Double? = null,
+    @SerialName("04. low")
+    val low: Double? = null,
+    @SerialName("05. price")
+    val price: Double? = null,
+    @SerialName("06. volume")
+    val volume: Long? = null,
+    @SerialName("07. latest trading day")
+    val latestTradingDay: String? = null,
+    @SerialName("08. previous close")
+    val previousClose: Double? = null,
+    @SerialName("09. change")
+    val change: Double? = null,
+    @SerialName("10. change percent")
+    val changePercent: String? = null,
+)
+```
+
+Consequently, fields in `SimpleStockQuote` should be nullable as well.
+
+```kotlin
+@Serializable
+data class SimpleStockQuote(
+    val price: Double?,
+    val symbol: String?,
+    val change: Double?,
+    val changePercent: String?,
+)
+```
+
+Now, when calling the endpoint with an unrecognized ticker symbol, the response simply displays null fields.
+
+```json
+{
+    "price": null,
+    "symbol": null,
+    "change": null,
+    "changePercent": null
+}
+```
+
+From here, you can decide whether this level of information is sufficient or check the fields to see if they're all null, providing a clearer error message if needed.
+
+## Wrapping Up
+
+The functionality of the endpoint is now complete, enabling us to embark on building client applications that can leverage this new endpoint. However, it's crucial to note that due to the recent updates, the unit tests established in [Part 3](/blog/ktor-crafting-a-stock-portfolio-endpoint-part-3) will currently fail. Rectifying these unit tests is imperative to consider the project truly complete. I leave this task to you, providing an opportunity for a hands-on exploration of unit test intricacies.
