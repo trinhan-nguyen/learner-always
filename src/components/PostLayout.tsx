@@ -33,18 +33,16 @@ export default function PostLayout({
             <TagBadge key={tag} tag={tag} />
           ))}
         </div>
-        {frontmatter.coverImage && (
-          <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
-            <Image
-              src={frontmatter.coverImage}
-              alt={frontmatter.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 768px"
-              priority
-            />
-          </div>
-        )}
+        <div className="relative aspect-[16/9] overflow-hidden rounded-lg">
+          <Image
+            src={`/blog/${post.slug}/opengraph-image`}
+            alt={frontmatter.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 768px"
+            priority
+          />
+        </div>
       </header>
       <div className="prose prose-gray max-w-none">{children}</div>
     </article>
