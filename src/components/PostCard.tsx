@@ -9,15 +9,17 @@ export default function PostCard({ post }: { post: Post }) {
   return (
     <article className="group">
       <Link href={`/blog/${slug}`} className="block">
-        <div className="relative aspect-[16/9] overflow-hidden rounded-lg mb-4">
-          <Image
-            src={`/blog/${slug}/opengraph-image`}
-            alt={frontmatter.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 50vw"
-          />
-        </div>
+        {frontmatter.coverImage && (
+          <div className="relative aspect-[16/9] overflow-hidden rounded-lg mb-4">
+            <Image
+              src={frontmatter.coverImage}
+              alt={frontmatter.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
+        )}
         <h2 className="text-xl font-semibold text-gray-800 group-hover:text-black transition-colors mb-2">
           {frontmatter.title}
         </h2>
