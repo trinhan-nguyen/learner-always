@@ -10,12 +10,28 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://learneralways.com"),
   title: {
     default: "Learner Always",
     template: "%s | Learner Always",
   },
   description:
     "A blog about technology, career growth, and the pursuit of continuous learning.",
+  openGraph: {
+    title: "Learner Always",
+    description:
+      "A blog about technology, career growth, and the pursuit of continuous learning.",
+    url: "https://learneralways.com",
+    siteName: "Learner Always",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Learner Always",
+    description:
+      "A blog about technology, career growth, and the pursuit of continuous learning.",
+  },
 };
 
 export default function RootLayout({
