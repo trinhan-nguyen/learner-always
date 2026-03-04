@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
+
+const umamiUrl = process.env.NEXT_PUBLIC_UMAMI_URL;
+const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
 
 const inter = Inter({
   variable: "--font-inter",
@@ -47,6 +51,13 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        {umamiUrl && umamiWebsiteId && (
+          <Script
+            src={`${umamiUrl}/script.js`}
+            data-website-id={umamiWebsiteId}
+            strategy="afterInteractive"
+          />
+        )}
       </body>
     </html>
   );
