@@ -7,7 +7,7 @@ export default function PostCard({ post }: { post: Post }) {
   const { slug, frontmatter, readingTime } = post;
 
   return (
-    <article className="group">
+    <article className="group flex flex-col h-full">
       <Link href={`/blog/${slug}`} className="block">
         {frontmatter.coverImage && (
           <div className="relative aspect-[16/9] overflow-hidden rounded-lg mb-4">
@@ -25,20 +25,22 @@ export default function PostCard({ post }: { post: Post }) {
         </h2>
       </Link>
       <p className="text-gray-500 text-sm mb-3">{frontmatter.excerpt}</p>
-      <div className="flex items-center justify-between">
-        <div className="flex gap-2 flex-wrap">
+      <div className="flex items-end justify-between gap-3 mt-auto">
+        <div className="flex gap-2 flex-wrap min-w-0">
           {frontmatter.tags.map((tag) => (
             <TagBadge key={tag} tag={tag} />
           ))}
         </div>
-        <span className="text-xs text-gray-400">
-          {new Date(frontmatter.date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}{" "}
-          &middot; {readingTime}
-        </span>
+        <div className="text-xs text-gray-400 text-right shrink-0">
+          <div>{readingTime}</div>
+          <div>
+            {new Date(frontmatter.date).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </div>
+        </div>
       </div>
     </article>
   );
