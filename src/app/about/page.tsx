@@ -12,36 +12,36 @@ export default function AboutPage() {
 
       <div className="prose prose-gray max-w-none">
         <p>
-          <strong>Learner Always</strong> is a blog dedicated to exploring the intersection of
-          technology, career growth, and the mindset of continuous learning.
+          Hey, I&apos;m Nhan — a software engineer at Meta based in New York.
+          I graduated from the University of Waterloo and have been building
+          software across mobile and backend ever since.
         </p>
 
-        <h2>Mission</h2>
         <p>
-          The tech industry moves fast. New frameworks, tools, and paradigms emerge constantly.
-          This blog exists to help navigate that landscape — breaking down complex topics into
-          practical, actionable insights that you can apply to your own journey.
+          I started this blog because I kept running into topics that I wished
+          someone had explained more clearly: why you should call external APIs from
+          your backend instead of the client, how <code>mutableIntStateOf</code> actually
+          differs from <code>mutableStateOf</code> in Compose, or what really happens
+          when an ATS scans your resume.
         </p>
 
-        <h2>What You&apos;ll Find Here</h2>
-        <ul>
-          <li>Deep dives into software engineering concepts and best practices</li>
-          <li>Career advice for developers at every stage</li>
-          <li>Honest reviews of tools, frameworks, and technologies</li>
-          <li>Reflections on the learning process itself</li>
-        </ul>
-
-        <h2>Editorial Integrity</h2>
         <p>
-          Every piece of content on this blog reflects genuine experience and honest assessment.
-          There are no sponsored posts, affiliate links, or paid placements. When I recommend
-          something, it&apos;s because I genuinely believe it provides value.
+          So I write the posts I wish I&apos;d found. Some are hands-on tutorials (like
+          building a stock portfolio endpoint in Ktor from scratch), some are career
+          advice drawn from real experience interviewing and reviewing resumes, and some
+          are just me working through ideas about productivity, finance, or what makes
+          mobile development its own beast.
         </p>
 
-        <h2>Connect</h2>
         <p>
-          Have questions, feedback, or topic suggestions? I&apos;d love to hear from you. The best
-          way to reach me is through the channels linked in the footer.
+          No sponsors, no affiliate links — just things I genuinely find useful or
+          interesting.
+        </p>
+
+        <p>
+          If you want to get in touch, you can find me on{" "}
+          <a href="https://github.com/trinhan-nguyen">GitHub</a> or{" "}
+          <a href="https://www.linkedin.com/in/trinhan-nguyen/">LinkedIn</a>.
         </p>
       </div>
     </div>
