@@ -20,9 +20,8 @@ export default function AboutPage() {
         <p>
           I started this blog because I kept running into topics that I wished
           someone had explained more clearly: why you should call external APIs from
-          your backend instead of the client, how <code>mutableIntStateOf</code> actually
-          differs from <code>mutableStateOf</code> in Compose, or what really happens
-          when an ATS scans your resume.
+          your backend instead of the client, or what really happens when an ATS
+          scans your resume.
         </p>
 
         <p>
