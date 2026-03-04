@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="max-w-3xl mx-auto">
+    <div>
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">About</h1>
 
       <div className="prose prose-gray max-w-none">
