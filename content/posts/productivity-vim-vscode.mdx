@@ -74,16 +74,16 @@ These are some basic motions that I usually use:
 - G moves to the bottom of the page
 - 0 moves to the beginning of a line
 - $ moves to the end of a line
-- { moves to the previous paragraph
-- } moves to the next paragraph
+- \{ moves to the previous paragraph
+- \} moves to the next paragraph
 - ^d moves down half a page
 - ^u moves up half a page
 
-**Counts:** Using {count}{motion} to empower the above motions. For example, 2b means moving the cursor backward two words. Or moving up one page by typing 2^u would do the trick.
+**Counts:** Using \{count\}\{motion\} to empower the above motions. For example, 2b means moving the cursor backward two words. Or moving up one page by typing 2^u would do the trick.
 
-- {lineNumber}gg moves to a specific line
+- \{lineNumber\}gg moves to a specific line
 
-**Operator:** {operator}{count}{motion}. There are 3 common operators:
+**Operator:** \{operator\}\{count\}\{motion\}. There are 3 common operators:
 
 - c change
 - y copy
@@ -111,7 +111,7 @@ This mode is also very simple. It assists in highlighting/selecting a text, whic
 - v starts highlighting a character at a time
 - V starts highlighting a line at a time
 
-It makes highlighting even faster and more precise by enabling highlighting to be used with any navigation keys in the normal mode. For instance, V} highlights everything from the current line to the end of the paragraph.
+It makes highlighting even faster and more precise by enabling highlighting to be used with any navigation keys in the normal mode. For instance, V\} highlights everything from the current line to the end of the paragraph.
 
 ## Some More Vim Commands
 
@@ -122,10 +122,10 @@ It makes highlighting even faster and more precise by enabling highlighting to b
 
 I recommended enabling Vim Sneak for a good reason:
 
-- s{char1}{char2} jumps to the next word that starts with those characters
-- S{char1}{char2} jumps to the previous word similarly
+- s\{char1\}\{char2\} jumps to the next word that starts with those characters
+- S\{char1\}\{char2\} jumps to the previous word similarly
 
-This is a better way to navigate to a specific word compared to the built-in f{char} since two characters enhance the precision. To move to the next occurrence, use semicolon (;) and comma (,) for the previous one.
+This is a better way to navigate to a specific word compared to the built-in f\{char\} since two characters enhance the precision. To move to the next occurrence, use semicolon (;) and comma (,) for the previous one.
 
 - . repeats any previous command
 

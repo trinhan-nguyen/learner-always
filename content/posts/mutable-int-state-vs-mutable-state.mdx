@@ -14,7 +14,7 @@ If you've been using Jetpack Compose, you've probably seen this warning: "Prefer
 
 Beyond MutableIntState, there are MutableDoubleState, MutableFloatState, and MutableLongState, which are similar in nature. For brevity, this post only discusses the differences between MutableIntState and MutableState, and the learnings should translate perfectly to the other types of mutable states. First, let's take a look at the definitions of mutableIntStateOf and mutableStateOf in the Android Developer official documentation.
 
-> The MutableIntState class is a single value holder whose reads and writes are observed by Compose. Additionally, writes to it are transacted as part of the Snapshot system. On the JVM, values are stored in memory as the primitive int type, avoiding the autoboxing that occurs when using MutableState<Int>
+> The MutableIntState class is a single value holder whose reads and writes are observed by Compose. Additionally, writes to it are transacted as part of the Snapshot system. On the JVM, values are stored in memory as the primitive int type, avoiding the autoboxing that occurs when using MutableState&lt;Int&gt;
 
 > The MutableState class is a single value holder whose reads and writes are observed by Compose. Additionally, writes to it are transacted as part of the Snapshot system.
 
@@ -42,4 +42,4 @@ The short answer is performance.
 
 When it comes to memory, the primitive type int takes 4 bytes, while its wrapper class Integer takes 16 bytes (300% overhead). Note that the overhead depends on the specific primitive type, so it's not always 300% memory overhead.
 
-Despite the memory overhead, it might not be a problem if we only have a small list of items or a single variable such as MutableState<Int>. The problem lies in the process of disposing of the unused wrapper classes. For that, the garbage collector needs to work hard, which, in turn, decreases the runtime in the best-case scenario. Sometimes, the garbage collector doesn't do a good job of cleaning up the garbage. In that case, we ended up with a severe memory leak, depending on how often a view needs to recompose. With such performance costs, it just makes sense that Google introduced MutableIntState to avoid autoboxing.
+Despite the memory overhead, it might not be a problem if we only have a small list of items or a single variable such as MutableState&lt;Int&gt;. The problem lies in the process of disposing of the unused wrapper classes. For that, the garbage collector needs to work hard, which, in turn, decreases the runtime in the best-case scenario. Sometimes, the garbage collector doesn't do a good job of cleaning up the garbage. In that case, we ended up with a severe memory leak, depending on how often a view needs to recompose. With such performance costs, it just makes sense that Google introduced MutableIntState to avoid autoboxing.
