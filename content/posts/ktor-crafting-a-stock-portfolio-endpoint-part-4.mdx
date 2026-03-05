@@ -10,7 +10,7 @@ To conclude this series, we are now refining our current endpoint by providing a
 
 ## Preparation
 
-Firstly, let's enhance the clarity of our code by renaming the default `get("/")` to the more specific `get("/quote")` in both `ApplicationTest.kt` and `Routing.kt`. This not only makes our route more explicit but also sets the stage for a cleaner separation of routing logic. To achieve this, we'll create a separate file named `SimpleStockQuoteRoute.kt`, where we'll house the routing logic. This restructuring lays the groundwork for seamlessly incorporating new endpoints in the future.
+Firstly, let's enhance the clarity of our code by renaming the default get("/") to the more specific get("/quote") in both ApplicationTest.kt and Routing.kt. This not only makes our route more explicit but also sets the stage for a cleaner separation of routing logic. To achieve this, we'll create a separate file named SimpleStockQuoteRoute.kt, where we'll house the routing logic. This restructuring lays the groundwork for seamlessly incorporating new endpoints in the future.
 
 ```kotlin
 fun Route.simpleStockQuoteRoute(
@@ -29,7 +29,7 @@ fun Route.simpleStockQuoteRoute(
 }
 ```
 
-With this, we can update `Routing.kt` to leverage the new function in `SimpleStockQuoteRoute.kt`.
+With this, we can update Routing.kt to leverage the new function in SimpleStockQuoteRoute.kt.
 
 ```kotlin
 fun Application.configureRouting(...) {
@@ -42,7 +42,7 @@ fun Application.configureRouting(...) {
 
 ## Path Parameters
 
-In our current implementation, we've hard-coded `symbol = "IBM"` to consistently retrieve stock information for IBM, which isn't equivalent to wrapping the original AlphaVantage endpoint. Fortunately, Ktor makes it straightforward to support path parameters.
+In our current implementation, we've hard-coded symbol = "IBM" to consistently retrieve stock information for IBM, which isn't equivalent to wrapping the original AlphaVantage endpoint. Fortunately, Ktor makes it straightforward to support path parameters.
 
 ```kotlin
 // A path parameter ({param}) matches a path segment and captures it
@@ -78,7 +78,7 @@ data class ErrorMessage(
 )
 ```
 
-Next, let's modify the logic for displaying error messages in `simpleStockQuoteRoute`. Currently, the endpoint displays "Failed to get the API key!" even when the ticker symbol (not the API key) is null.
+Next, let's modify the logic for displaying error messages in simpleStockQuoteRoute. Currently, the endpoint displays "Failed to get the API key!" even when the ticker symbol (not the API key) is null.
 
 ```kotlin
 get("/quote/{$SYMBOL_PARAM}") {
@@ -126,7 +126,7 @@ data class GlobalQuote(
 )
 ```
 
-Consequently, fields in `SimpleStockQuote` should be nullable as well.
+Consequently, fields in SimpleStockQuote should be nullable as well.
 
 ```kotlin
 @Serializable

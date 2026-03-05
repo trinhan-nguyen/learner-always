@@ -61,35 +61,35 @@ Even though it is called "normal" mode, it is not normal, in my opinion. Neverth
 
 **hjkl** are the keys to replace arrow keys in normal mode:
 
-- `h` left
-- `j` down
-- `k` up
-- `l` right
+- h left
+- j down
+- k up
+- l right
 
 These are some basic motions that I usually use:
 
-- `w` moves to the next word
-- `b` moves to the previous word
-- `gg` moves to the top of the page
-- `G` moves to the bottom of the page
-- `0` moves to the beginning of a line
-- `$` moves to the end of a line
-- `{` moves to the previous paragraph
-- `}` moves to the next paragraph
-- `^d` moves down half a page
-- `^u` moves up half a page
+- w moves to the next word
+- b moves to the previous word
+- gg moves to the top of the page
+- G moves to the bottom of the page
+- 0 moves to the beginning of a line
+- $ moves to the end of a line
+- { moves to the previous paragraph
+- } moves to the next paragraph
+- ^d moves down half a page
+- ^u moves up half a page
 
-**Counts:** Using `{count}{motion}` to empower the above motions. For example, `2b` means moving the cursor backward two words. Or moving up one page by typing `2^u` would do the trick.
+**Counts:** Using {count}{motion} to empower the above motions. For example, 2b means moving the cursor backward two words. Or moving up one page by typing 2^u would do the trick.
 
-- `{lineNumber}gg` moves to a specific line
+- {lineNumber}gg moves to a specific line
 
-**Operator:** `{operator}{count}{motion}`. There are 3 common operators:
+**Operator:** {operator}{count}{motion}. There are 3 common operators:
 
-- `c` change
-- `y` copy
-- `p` paste
+- c change
+- y copy
+- p paste
 
-For instance, `c5w` would delete the next 5 words and enter insert mode. Another good one is typing `ci"` after moving the cursor between a pair of double quotes. That would delete everything between the double quotes and start insert mode.
+For instance, c5w would delete the next 5 words and enter insert mode. Another good one is typing ci" after moving the cursor between a pair of double quotes. That would delete everything between the double quotes and start insert mode.
 
 ### Insert Mode
 
@@ -97,39 +97,39 @@ Insert mode is the most straightforward one. This mode is probably what we are f
 
 The efficiency stems from switching from normal mode. All the following commands will switch our editor from normal mode to insert mode.
 
-- `i` puts the insert cursor before the current character
-- `a` puts the insert cursor after the current character
-- `I` puts the insert cursor at the beginning of the line
-- `A` puts the insert cursor at the end of the line
-- `o` inserts a new line below and starts the cursor on that line
-- `O` inserts a new line above and starts the cursor on that line
+- i puts the insert cursor before the current character
+- a puts the insert cursor after the current character
+- I puts the insert cursor at the beginning of the line
+- A puts the insert cursor at the end of the line
+- o inserts a new line below and starts the cursor on that line
+- O inserts a new line above and starts the cursor on that line
 
 ### Visual Mode
 
 This mode is also very simple. It assists in highlighting/selecting a text, which we usually perform with a mouse. To enter the visual mode, we can use these two basic commands:
 
-- `v` starts highlighting a character at a time
-- `V` starts highlighting a line at a time
+- v starts highlighting a character at a time
+- V starts highlighting a line at a time
 
-It makes highlighting even faster and more precise by enabling highlighting to be used with any navigation keys in the normal mode. For instance, `V}` highlights everything from the current line to the end of the paragraph.
+It makes highlighting even faster and more precise by enabling highlighting to be used with any navigation keys in the normal mode. For instance, V} highlights everything from the current line to the end of the paragraph.
 
 ## Some More Vim Commands
 
-- `dd` deletes the current line
-- `yy` copies the current line
-- `p` pastes whatever we have deleted/copied in normal mode
-- `zz` centers the page on cursor while maintaining cursor position
+- dd deletes the current line
+- yy copies the current line
+- p pastes whatever we have deleted/copied in normal mode
+- zz centers the page on cursor while maintaining cursor position
 
 I recommended enabling Vim Sneak for a good reason:
 
-- `s{char1}{char2}` jumps to the next word that starts with those characters
-- `S{char1}{char2}` jumps to the previous word similarly
+- s{char1}{char2} jumps to the next word that starts with those characters
+- S{char1}{char2} jumps to the previous word similarly
 
-This is a better way to navigate to a specific word compared to the built-in `f{char}` since two characters enhance the precision. To move to the next occurrence, use semicolon (`;`) and comma (`,`) for the previous one.
+This is a better way to navigate to a specific word compared to the built-in f{char} since two characters enhance the precision. To move to the next occurrence, use semicolon (;) and comma (,) for the previous one.
 
-- `.` repeats any previous command
+- . repeats any previous command
 
-With Vim Sneak, navigation becomes much more powerful; thus, our Vim command can be as complicated as `vsco;` which highlights everything from the current cursor to the second occurrence of a word that starts with `co`.
+With Vim Sneak, navigation becomes much more powerful; thus, our Vim command can be as complicated as vsco; which highlights everything from the current cursor to the second occurrence of a word that starts with co.
 
 ## VSCode Shortcuts
 
@@ -152,7 +152,7 @@ Initially, I mapped &#x21ea; to ^ for a couple of reasons:
 2. I only use &#x238b; for Vim and Vimium (a Chrome Extension)
 3. I use ^c or ^d for terminating background threads or running tasks in the terminal
 4. I use ^ for a couple of shortcuts in VSCode and other applications
-5. There are also a bunch of commands in Vim that need ^ — `^d` moves the cursor down half a page, `^u` moves the cursor up half a page
+5. There are also a bunch of commands in Vim that need ^ — ^d moves the cursor down half a page, ^u moves the cursor up half a page
 
 Luckily, we don't have to choose. We can map &#x21ea; to both &#x238b; and ^ with Karabiner or Hammerspoon. Since we usually bind ^ with another key, it makes so much sense to map &#x21ea; to &#x238b; for a single click and &#x21ea; to ^ for a hold. From my experience, Hammerspoon does its job.
 
@@ -160,7 +160,7 @@ Luckily, we don't have to choose. We can map &#x21ea; to both &#x238b; and ^ wit
 
 Hopefully, by now, you are sold on the fact that the combination of Vim and VSCode enhances your productivity and increases the comfortability of editing text. No one is expected to remember and apply all these commands after finishing reading this post for the first time. Vim has a decent learning curve, but don't worry; it's not that perplexing if you have VSCode.
 
-If you are new to Vim, then you should start by avoiding using a cursor as much as possible. Using Vim with VSCode allows you to switch back to your mouse whenever you don't feel like using Vim. This can make the learning curve much more gentle for beginners. To learn even more about Vim, `vimtutor` is a great resource that can be easily accessed through the terminal.
+If you are new to Vim, then you should start by avoiding using a cursor as much as possible. Using Vim with VSCode allows you to switch back to your mouse whenever you don't feel like using Vim. This can make the learning curve much more gentle for beginners. To learn even more about Vim, vimtutor is a great resource that can be easily accessed through the terminal.
 
 If you are adept at Vim, you have my respect for making it all the way to the end. Please also share your tips and tricks for productivity so we can all learn!
 

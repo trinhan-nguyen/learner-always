@@ -22,7 +22,7 @@ This tutorial builds on Google's Friendly Chat sample application. First, comple
 
 **Step 1:** Add Firebase to the Friendly Chat app via Firebase Console following official documentation.
 
-**Step 2:** Add Firebase dependencies to `pubspec.yaml`:
+**Step 2:** Add Firebase dependencies to pubspec.yaml:
 
 ```yaml
 dependencies:
@@ -48,7 +48,7 @@ final DatabaseReference _messageDatabaseReference =
   FirebaseDatabase.instance.reference().child("messages");
 ```
 
-Modify the `_handleSubmitted` callback to push messages to the database:
+Modify the _handleSubmitted callback to push messages to the database:
 
 ```dart
 void _handleSubmitted(String text) {
@@ -101,13 +101,13 @@ final StorageReference _photoStorageReference =
   _firebaseStorage.ref().child("chat_photos");
 ```
 
-Add the `image_picker` dependency:
+Add the image_picker dependency:
 
 ```yaml
 image_picker: ^0.6.0+9
 ```
 
-The image flow involves users selecting photos from the gallery or camera. The `image_picker` package returns a File object. This file uploads to Firebase Storage, and the resulting URL pushes to the Firebase Database so widgets can display the image.
+The image flow involves users selecting photos from the gallery or camera. The image_picker package returns a File object. This file uploads to Firebase Storage, and the resulting URL pushes to the Firebase Database so widgets can display the image.
 
 ```dart
 Widget _buildTextComposer() {
@@ -178,7 +178,7 @@ void _sendImageFromGallery() async {
 }
 ```
 
-Implement `_sendImage` using UUID for file naming:
+Implement _sendImage using UUID for file naming:
 
 ```dart
 import 'package:uuid/uuid.dart';

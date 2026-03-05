@@ -10,9 +10,9 @@ Let's build a simple server for an investment portfolio tracker using Ktor - a l
 
 ## Setup
 
-To set things up, you can follow Ktor's official documentation to build a simple server application that prints "Hello World!" on a browser. For ease of following along, let's choose Netty as the main engine and `YAML` as the configuration file format.
+To set things up, you can follow Ktor's official documentation to build a simple server application that prints "Hello World!" on a browser. For ease of following along, let's choose Netty as the main engine and YAML as the configuration file format.
 
-Now, you officially have a working server but it can only print a string instead of a tailored type-safe response. The entry point of the server lives in `Application.kt` with the main logic in `Routing.kt` which was installed as a plugin.
+Now, you officially have a working server but it can only print a string instead of a tailored type-safe response. The entry point of the server lives in Application.kt with the main logic in Routing.kt which was installed as a plugin.
 
 ```kotlin
 fun main(args: Array<String>) {
@@ -42,7 +42,7 @@ Let's create a simple type-safe response in a new file and return that instead o
 data class Response(val status: String)
 ```
 
-With that, you can update the logic in `Routing.kt` to return the new type instead.
+With that, you can update the logic in Routing.kt to return the new type instead.
 
 ```kotlin
 fun Application.configureRouting() {
@@ -54,9 +54,9 @@ fun Application.configureRouting() {
 }
 ```
 
-The server throws an error `Failed to load resource: the server responded with a status of 500 ()`. Chrome also displays a generic error message that doesn't add any value to help us determine the underlying cause.
+The server throws an error Failed to load resource: the server responded with a status of 500 (). Chrome also displays a generic error message that doesn't add any value to help us determine the underlying cause.
 
-Luckily, Ktor has Status Pages, a useful plugin to respond appropriately to any failure state based on a thrown exception or status code. Let's start by adding the dependency in `build.gradle.kts` if you haven't already.
+Luckily, Ktor has Status Pages, a useful plugin to respond appropriately to any failure state based on a thrown exception or status code. Let's start by adding the dependency in build.gradle.kts if you haven't already.
 
 ```gradle
 dependencies {
@@ -65,7 +65,7 @@ dependencies {
 }
 ```
 
-Next, you can configure Status Pages similar to how the Routing plugin was configured. That means putting the main configuration logic function in a separate file `StatusPages.kt` which is called in `Application.kt`. Then, let's run the application again.
+Next, you can configure Status Pages similar to how the Routing plugin was configured. That means putting the main configuration logic function in a separate file StatusPages.kt which is called in Application.kt. Then, let's run the application again.
 
 ```kotlin
 fun Application.module() {
@@ -88,7 +88,7 @@ fun Application.configureStatusPages() {
 }
 ```
 
-The browser is now able to catch the exception and print a useful message. Turns out that the Response type needs serializing before returning it to the browser. Following the instructions from the error message, you can install the serialization compiler plugin and mark the Response class `@Serializable`.
+The browser is now able to catch the exception and print a useful message. Turns out that the Response type needs serializing before returning it to the browser. Following the instructions from the error message, you can install the serialization compiler plugin and mark the Response class @Serializable.
 
 ```gradle
 dependencies {

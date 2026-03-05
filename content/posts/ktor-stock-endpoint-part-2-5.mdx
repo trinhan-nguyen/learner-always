@@ -48,7 +48,7 @@ dependencies {
 }
 ```
 
-Update `gradle.properties`:
+Update gradle.properties:
 
 ```properties
 koinVersion=3.5.3
@@ -65,7 +65,7 @@ fun Application.configureKoin() {
 }
 ```
 
-Call this function in `Application.kt`:
+Call this function in Application.kt:
 
 ```kotlin
 fun Application.module() {
@@ -76,7 +76,7 @@ fun Application.module() {
 
 ## Modules
 
-A Koin module organizes dependency injection definitions and configurations. Create an empty `applicationModule` file:
+A Koin module organizes dependency injection definitions and configurations. Create an empty applicationModule file:
 
 ```kotlin
 val applicationModule = module {
@@ -96,7 +96,7 @@ val applicationModule = module {
 }
 ```
 
-The `single` keyword indicates a Singleton pattern — the same instance is provided each time. In `Application.kt`, provide the dependency:
+The single keyword indicates a Singleton pattern — the same instance is provided each time. In Application.kt, provide the dependency:
 
 ```kotlin
 fun Application.module() {

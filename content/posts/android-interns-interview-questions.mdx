@@ -14,35 +14,35 @@ The answers here are solely based on personal opinions as well as interviewer fe
 
 ### 1. What is an Activity?
 
-An `Activity` is an application component that usually represents a single screen with a user interface.
+An Activity is an application component that usually represents a single screen with a user interface.
 
 *Extra: Each Activity has its lifecycle so we may have more control over what we can do at different states of the Activity through callbacks.*
 
 ### 2. What is a Fragment?
 
-We can think of a `Fragment` as a sub-activity, which essentially is a modular section of an application's user interface or a behavior that can be placed in an `Activity`. Therefore, `Fragment` enables modular design as an `Activity` can contain multiple `Fragments`.
+We can think of a Fragment as a sub-activity, which essentially is a modular section of an application's user interface or a behavior that can be placed in an Activity. Therefore, Fragment enables modular design as an Activity can contain multiple Fragments.
 
 *Extra: The host Activity can add or remove Fragments at any time. Even though a Fragment has its lifecycle and callbacks, the lifecycle is closely related to the host's lifecycle.*
 
 ### 3. What are lifecycles?
 
-Since users can navigate among different screens and applications, the `Activities` and `Fragments` that represent those screens will have to go through different states of their lifecycles. Each state has a callback, which provides a mechanism that allows developers to execute some code when the state changes. Different callbacks at different states of a lifecycle includes `onCreate()`, `onRestart()`, `onStart()`, `onResume()`, `onPause()`, `onStop()`, and `onDestroy()`.
+Since users can navigate among different screens and applications, the Activities and Fragments that represent those screens will have to go through different states of their lifecycles. Each state has a callback, which provides a mechanism that allows developers to execute some code when the state changes. Different callbacks at different states of a lifecycle includes onCreate(), onRestart(), onStart(), onResume(), onPause(), onStop(), and onDestroy().
 
 ### 4. What is the difference between onStart() and onResume()?
 
-`onStart()` is called when the `Activity` becomes visible, whereas `onResume()` is called when the `Activity` is in the foreground and the user can interact with it. If we navigate away then reopen an application, both `onStart()` and `onResume()` are called. On the other hand, if a dialog pops up and is dismissed, only `onResume()` is called.
+onStart() is called when the Activity becomes visible, whereas onResume() is called when the Activity is in the foreground and the user can interact with it. If we navigate away then reopen an application, both onStart() and onResume() are called. On the other hand, if a dialog pops up and is dismissed, only onResume() is called.
 
 ### 5. What kind of code would you put in onStart(), and what kind of code would you put in onResume()?
 
-Imagine that we are driving, `onStart()` should contain the code for starting a car (from home) such as starting the engine and releasing the hand brake. The callback `onResume()` should contain the code for resuming a car on the road (after a red light perhaps) such as releasing the foot brake and pressing the gas pedal.
+Imagine that we are driving, onStart() should contain the code for starting a car (from home) such as starting the engine and releasing the hand brake. The callback onResume() should contain the code for resuming a car on the road (after a red light perhaps) such as releasing the foot brake and pressing the gas pedal.
 
 ### 6. What are configuration changes? How should we handle them?
 
-Device configurations may change during runtime such as screen orientation, keyboard availability, and multi-window mode. The configuration changes may recreate `Activities` or `Fragments`, which may affect their states. It is important that we restore (or maintain) the states and data after configuration changes occur.
+Device configurations may change during runtime such as screen orientation, keyboard availability, and multi-window mode. The configuration changes may recreate Activities or Fragments, which may affect their states. It is important that we restore (or maintain) the states and data after configuration changes occur.
 
 ### 7. What are the Android Application Components?
 
-Application components are essential building blocks for an Android application. They consist of `Activities`, `Services`, `Broadcast Receivers`, and `Content Providers`.
+Application components are essential building blocks for an Android application. They consist of Activities, Services, Broadcast Receivers, and Content Providers.
 
 ### 8. What is the difference between IntentService and JobIntentService?
 
@@ -50,7 +50,7 @@ IntentService was deprecated in favor of JobIntentService, which handles backgro
 
 ### 9. What are the differences between ListView and RecyclerView?
 
-The primary distinguishing feature is the ViewHolder pattern. RecyclerView enforces the ViewHolder pattern, which improves performance by recycling views and avoiding unnecessary `findViewById()` calls.
+The primary distinguishing feature is the ViewHolder pattern. RecyclerView enforces the ViewHolder pattern, which improves performance by recycling views and avoiding unnecessary findViewById() calls.
 
 ### 10. What are unit tests?
 
@@ -70,15 +70,15 @@ Asynchronous programming is almost always listed as the first benefit of reactiv
 
 ### 14. What is an Observable in RxJava?
 
-An observable represents any object that can get data from a data source and emit a sequence of data (its states) for any registered observer. An observer is simply an object who wants to get notified when an observable emits its data. The `Observable` class in RxJava is a class that can emit any number of values and then complete or emit an error.
+An observable represents any object that can get data from a data source and emit a sequence of data (its states) for any registered observer. An observer is simply an object who wants to get notified when an observable emits its data. The Observable class in RxJava is a class that can emit any number of values and then complete or emit an error.
 
 ### 15. What is a Single, Maybe, and Completable in RxJava?
 
-**`Single`** is an observable that emits a value and completes or emits an error.
+**Single** is an observable that emits a value and completes or emits an error.
 
-**`Maybe`** is similar to Single but it may not emit any value. That means it can either emit an item and complete, or emit an error, or just complete.
+**Maybe** is similar to Single but it may not emit any value. That means it can either emit an item and complete, or emit an error, or just complete.
 
-**`Completable`** either completes or emits an error. It does not emit any value.
+**Completable** either completes or emits an error. It does not emit any value.
 
 ## Bonus Questions
 

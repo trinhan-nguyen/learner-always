@@ -10,9 +10,9 @@ This is the second installment in a series focused on developing a single endpoi
 
 ## Secret API Key
 
-The Alpha Vantage endpoint requires an `apikey` parameter that governs usage limits based on subscription tier. Free tier users receive 25 requests daily, while premium plans ($249.99/month) allow up to 1200 requests per minute. API keys must remain private to prevent malicious exploitation of rate limits.
+The Alpha Vantage endpoint requires an apikey parameter that governs usage limits based on subscription tier. Free tier users receive 25 requests daily, while premium plans ($249.99/month) allow up to 1200 requests per minute. API keys must remain private to prevent malicious exploitation of rate limits.
 
-Environment variables represent the simplest approach for securing sensitive credentials. Configuration occurs via `application.yaml`:
+Environment variables represent the simplest approach for securing sensitive credentials. Configuration occurs via application.yaml:
 
 ```yaml
 ktor:
@@ -20,7 +20,7 @@ ktor:
     environment: $ALPHA_VANTAGE_API_KEY
 ```
 
-Testing credential access involves modifying `Routing.kt`:
+Testing credential access involves modifying Routing.kt:
 
 ```kotlin
 fun Application.configureRouting() {
@@ -81,7 +81,7 @@ data class GlobalQuote(
 )
 ```
 
-The `@Serializable` annotation enables JSON parsing from the serialization plugin.
+The @Serializable annotation enables JSON parsing from the serialization plugin.
 
 ## API Call
 
@@ -146,9 +146,9 @@ class AlphaVantageApiImpl : AlphaVantageApi {
 private const val ALPHA_VANTAGE_URL = "www.alphavantage.co"
 ```
 
-The `getQuote` function is suspending to handle asynchronous network operations.
+The getQuote function is suspending to handle asynchronous network operations.
 
-Updated `Routing.kt` integration:
+Updated Routing.kt integration:
 
 ```kotlin
 fun Application.configureRouting() {
@@ -170,7 +170,7 @@ fun Application.configureRouting() {
 
 ## Serial Name
 
-JSON field names from Alpha Vantage don't directly map to Kotlin naming conventions. The `@SerialName` annotation resolves this mismatch:
+JSON field names from Alpha Vantage don't directly map to Kotlin naming conventions. The @SerialName annotation resolves this mismatch:
 
 ```kotlin
 @Serializable
